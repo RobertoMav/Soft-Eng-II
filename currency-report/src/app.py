@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from fastapi import FastAPI, Query
 
@@ -30,5 +30,5 @@ def get_quote(
         "from": from_currency,
         "to": to_currency,
         "price": rate,
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
     }

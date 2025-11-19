@@ -7,8 +7,34 @@ on:
     branches: [main, master]
 
 jobs:
-  build-test-currency-report:
+  # Currency Report Jobs
+  lint-currency-report:
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v2
+
+      - name: Set up Python
+        run: uv python install 3.12
+
+      - name: Install dependencies
+        working-directory: ./currency-report
+        run: uv sync --extra dev
+
+      - name: Run ruff linting
+        working-directory: ./currency-report
+        run: uv run ruff check .
+
+      - name: Run ruff format check
+        working-directory: ./currency-report
+        run: uv run ruff format --check .
+
+  test-currency-report:
+    runs-on: ubuntu-latest
+    needs: lint-currency-report
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -26,12 +52,45 @@ jobs:
       - name: Run tests
         working-directory: ./currency-report
         run: uv run pytest tests/ -v
+
+  docker-build-currency-report:
+    runs-on: ubuntu-latest
+    needs: test-currency-report
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Build Docker image
         run: docker build -t currency-report:latest ./currency-report
 
-  build-test-currency-history:
+  # Currency History Jobs
+  lint-currency-history:
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v2
+
+      - name: Set up Python
+        run: uv python install 3.12
+
+      - name: Install dependencies
+        working-directory: ./currency-history
+        run: uv sync --extra dev
+
+      - name: Run ruff linting
+        working-directory: ./currency-history
+        run: uv run ruff check .
+
+      - name: Run ruff format check
+        working-directory: ./currency-history
+        run: uv run ruff format --check .
+
+  test-currency-history:
+    runs-on: ubuntu-latest
+    needs: lint-currency-history
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -49,6 +108,13 @@ jobs:
       - name: Run tests
         working-directory: ./currency-history
         run: uv run pytest tests/ -v
+
+  docker-build-currency-history:
+    runs-on: ubuntu-latest
+    needs: test-currency-history
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Build Docker image
         run: docker build -t currency-history:latest ./currency-history

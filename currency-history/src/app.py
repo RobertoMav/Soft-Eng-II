@@ -1,5 +1,5 @@
 import os
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import httpx
 from fastapi import FastAPI, Query
@@ -12,14 +12,14 @@ CURRENCY_REPORT_URL = os.getenv("CURRENCY_REPORT_URL", "http://currency-report:8
 # Mocked historical data (last 3 days)
 HISTORICAL_DATA = {
     ("USD", "BRL"): [
-        {"timestamp": (datetime.now(timezone.utc) - timedelta(days=3)).isoformat(), "price": 5.38},
-        {"timestamp": (datetime.now(timezone.utc) - timedelta(days=2)).isoformat(), "price": 5.40},
-        {"timestamp": (datetime.now(timezone.utc) - timedelta(days=1)).isoformat(), "price": 5.41},
+        {"timestamp": (datetime.now(UTC) - timedelta(days=3)).isoformat(), "price": 5.38},
+        {"timestamp": (datetime.now(UTC) - timedelta(days=2)).isoformat(), "price": 5.40},
+        {"timestamp": (datetime.now(UTC) - timedelta(days=1)).isoformat(), "price": 5.41},
     ],
     ("EUR", "BRL"): [
-        {"timestamp": (datetime.now(timezone.utc) - timedelta(days=3)).isoformat(), "price": 5.85},
-        {"timestamp": (datetime.now(timezone.utc) - timedelta(days=2)).isoformat(), "price": 5.87},
-        {"timestamp": (datetime.now(timezone.utc) - timedelta(days=1)).isoformat(), "price": 5.88},
+        {"timestamp": (datetime.now(UTC) - timedelta(days=3)).isoformat(), "price": 5.85},
+        {"timestamp": (datetime.now(UTC) - timedelta(days=2)).isoformat(), "price": 5.87},
+        {"timestamp": (datetime.now(UTC) - timedelta(days=1)).isoformat(), "price": 5.88},
     ],
 }
 
@@ -37,7 +37,7 @@ async def get_history(
     # Get historical mocked data
     historical = HISTORICAL_DATA.get(
         (from_currency, to_currency),
-        [{"timestamp": (datetime.now(timezone.utc) - timedelta(days=1)).isoformat(), "price": 1.0}],
+        [{"timestamp": (datetime.now(UTC) - timedelta(days=1)).isoformat(), "price": 1.0}],
     )
 
     # Fetch current quote from currency-report service using service name
