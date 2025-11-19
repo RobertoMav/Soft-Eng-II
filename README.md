@@ -1,126 +1,126 @@
-# Microservices + DevOps Assignment
+# Trabalho Eng Soft II - Roberto Martins
 
-This project implements two microservices that provide currency exchange rate data, demonstrating microservice architecture, Docker containerization, service-to-service communication, and CI/CD practices.
+Este projeto implementa dois microserviços que fornecem dados de taxa de câmbio, demonstrando arquitetura de microserviços, containerização com Docker, comunicação entre serviços e práticas de CI/CD.
 
-## Project Overview
+## Visão Geral do Projeto
 
-The system consists of two microservices:
+O sistema consiste em dois microserviços:
 
-1. **currency-report**: Provides current exchange rate quotes
-2. **currency-history**: Provides historical exchange rate data by calling currency-report
+1. **currency-report**: Fornece cotações atuais de taxas de câmbio
+2. **currency-history**: Fornece dados históricos de taxas de câmbio chamando o currency-report
 
-### Key Features
+### Funcionalidades Principais
 
-- ✅ **Microservice Architecture**: Two independent services with clear responsibilities
-- ✅ **Inter-Service Communication**: currency-history calls currency-report using service names (not localhost)
-- ✅ **Docker Containerization**: Both services fully containerized
-- ✅ **Docker Compose Orchestration**: Services managed with compose, sharing a common network
-- ✅ **CI/CD Pipeline**: GitHub Actions for automated build, test, and Docker image creation
-- ✅ **Health Checks**: Both services implement health endpoints
-- ✅ **Graceful Degradation**: currency-history handles currency-report unavailability
+- ✅ **Arquitetura de Microserviços**: Dois serviços independentes com responsabilidades claras
+- ✅ **Comunicação Entre Serviços**: currency-history chama currency-report usando nomes de serviço (não localhost)
+- ✅ **Containerização com Docker**: Ambos os serviços totalmente containerizados
+- ✅ **Orquestração com Docker Compose**: Serviços gerenciados com compose, compartilhando uma rede comum
+- ✅ **Pipeline CI/CD**: GitHub Actions para build, teste e criação de imagens Docker automatizados
+- ✅ **Health Checks**: Ambos os serviços implementam endpoints de saúde
+- ✅ **Degradação Graceful**: currency-history trata a indisponibilidade do currency-report
 
-## Architecture
+## Arquitetura
 
 ```
 ┌─────────────────────┐
 │  currency-history   │
-│   (Port 8101)       │
+│   (Porta 8101)      │
 │                     │
 │  GET /health        │
 │  GET /history       │
 └──────────┬──────────┘
            │
-           │ HTTP Call
-           │ (service name: currency-report:8100)
+           │ Chamada HTTP
+           │ (nome do serviço: currency-report:8100)
            ▼
 ┌─────────────────────┐
 │  currency-report    │
-│   (Port 8100)       │
+│   (Porta 8100)      │
 │                     │
 │  GET /health        │
 │  GET /quote         │
 └─────────────────────┘
 ```
 
-## Prerequisites
+## Pré-requisitos
 
 - [Docker](https://docs.docker.com/get-docker/)
 - [Docker Compose](https://docs.docker.com/compose/install/)
-- [uv](https://docs.astral.sh/uv/) (for local development)
-- Python 3.12+ (for local development)
+- [uv](https://docs.astral.sh/uv/) (para desenvolvimento local)
+- Python 3.12+ (para desenvolvimento local)
 
-## Getting Started
+## Como Começar
 
-### 1. Start the Environment
+### 1. Iniciar o Ambiente
 
 ```bash
 docker compose up --build
 ```
 
-This command will:
-- Build both Docker images
-- Start both services
-- Create a shared network for inter-service communication
-- Wait for currency-report to be healthy before starting currency-history
+Este comando irá:
+- Construir ambas as imagens Docker
+- Iniciar ambos os serviços
+- Criar uma rede compartilhada para comunicação entre serviços
+- Aguardar o currency-report estar saudável antes de iniciar o currency-history
 
-### 2. Test the Services
+### 2. Testar os Serviços
 
-Once the services are running, test them using `curl`:
+Uma vez que os serviços estejam rodando, teste-os usando `curl`:
 
-#### Test currency-report
+#### Testar currency-report
 
 ```bash
 # Health check
 curl http://localhost:8100/health
 
-# Get exchange rate quote
+# Obter cotação de taxa de câmbio
 curl "http://localhost:8100/quote?from=USD&to=BRL"
 
-# Try different currency pairs
+# Tentar diferentes pares de moedas
 curl "http://localhost:8100/quote?from=EUR&to=BRL"
 ```
 
-#### Test currency-history
+#### Testar currency-history
 
 ```bash
 # Health check
 curl http://localhost:8101/health
 
-# Get exchange rate history
+# Obter histórico de taxa de câmbio
 curl "http://localhost:8101/history?from=USD&to=BRL"
 
-# Try different currency pairs
+# Tentar diferentes pares de moedas
 curl "http://localhost:8101/history?from=EUR&to=BRL"
 ```
 
-### 3. Stop the Environment
+### 3. Parar o Ambiente
 
 ```bash
 docker compose down
 ```
 
-## API Documentation
+## Documentação da API
 
-### currency-report Service (Port 8100)
+### Serviço currency-report (Porta 8100)
 
 #### `GET /health`
-Returns the service health status.
+Retorna o status de saúde do serviço.
 
-**Response:**
+**Resposta:**
 ```json
 {
   "status": "UP"
 }
 ```
 
-#### `GET /quote?from={currency}&to={currency}`
-Returns the current exchange rate for a currency pair.
+#### `GET /quote?from={moeda}&to={moeda}`
+Retorna a taxa de câmbio atual para um par de moedas.
 
-**Parameters:**
-- `from`: Source currency code (e.g., USD, EUR)
-- `to`: Target currency code (e.g., BRL)
+**Parâmetros:**
+- `from`: Código da moeda de origem (ex: USD, EUR)
+- `to`: Código da moeda de destino (ex: BRL)
 
-**Response:**
+**Resposta:**
 ```json
 {
   "from": "USD",
@@ -130,26 +130,26 @@ Returns the current exchange rate for a currency pair.
 }
 ```
 
-### currency-history Service (Port 8101)
+### Serviço currency-history (Porta 8101)
 
 #### `GET /health`
-Returns the service health status.
+Retorna o status de saúde do serviço.
 
-**Response:**
+**Resposta:**
 ```json
 {
   "status": "UP"
 }
 ```
 
-#### `GET /history?from={currency}&to={currency}`
-Returns historical exchange rates for a currency pair, including the current rate fetched from currency-report.
+#### `GET /history?from={moeda}&to={moeda}`
+Retorna taxas de câmbio históricas para um par de moedas, incluindo a taxa atual obtida do currency-report.
 
-**Parameters:**
-- `from`: Source currency code (e.g., USD, EUR)
-- `to`: Target currency code (e.g., BRL)
+**Parâmetros:**
+- `from`: Código da moeda de origem (ex: USD, EUR)
+- `to`: Código da moeda de destino (ex: BRL)
 
-**Response:**
+**Resposta:**
 ```json
 {
   "from": "USD",
@@ -175,31 +175,11 @@ Returns historical exchange rates for a currency pair, including the current rat
 }
 ```
 
-**Note:** The last entry is fetched in real-time from currency-report service.
+**Nota:** A última entrada é obtida em tempo real do serviço currency-report.
 
-## Inter-Service Communication
+## Desenvolvimento
 
-The currency-history service demonstrates proper microservice communication by:
-
-1. Using the **service name** (`currency-report`) instead of localhost
-2. Using the configured environment variable `CURRENCY_REPORT_URL`
-3. Making async HTTP calls using `httpx.AsyncClient`
-4. Implementing graceful degradation when currency-report is unavailable
-
-```python
-# Example from currency-history/src/app.py
-CURRENCY_REPORT_URL = os.getenv("CURRENCY_REPORT_URL", "http://currency-report:8100")
-
-async with httpx.AsyncClient() as client:
-    response = await client.get(
-        f"{CURRENCY_REPORT_URL}/quote",
-        params={"from": from_currency, "to": to_currency}
-    )
-```
-
-## Development
-
-### Local Development Setup
+### Configuração de Desenvolvimento Local
 
 #### currency-report
 
@@ -214,154 +194,101 @@ uv run uvicorn src.app:app --reload --port 8100
 ```bash
 cd currency-history
 uv sync --extra dev
-# Set the service URL for local testing
+# Definir a URL do serviço para testes locais
 export CURRENCY_REPORT_URL=http://localhost:8100
 uv run uvicorn src.app:app --reload --port 8101
 ```
 
-### Running Tests
+### Executar Testes
 
-#### Test currency-report
+#### Testar currency-report
 
 ```bash
 cd currency-report
 uv run pytest tests/ -v
 ```
 
-#### Test currency-history
+#### Testar currency-history
 
 ```bash
 cd currency-history
 uv run pytest tests/ -v
 ```
 
-### Building Docker Images Individually
+### Construir Imagens Docker Individualmente
 
 ```bash
-# Build currency-report
+# Construir currency-report
 docker build -t currency-report:latest ./currency-report
 
-# Build currency-history
+# Construir currency-history
 docker build -t currency-history:latest ./currency-history
 ```
 
-## CI/CD Pipeline
+## Pipeline CI/CD
 
-The project includes a GitHub Actions pipeline (`.github/workflows/ci.yml`) that automatically:
+O projeto inclui um pipeline do GitHub Actions (`.github/workflows/ci.yml`) que automaticamente:
 
-1. **Builds** both services
-2. **Tests** both services using pytest
-3. **Creates Docker images** for both services
+1. **Constrói** ambos os serviços
+2. **Testa** ambos os serviços usando pytest
+3. **Cria imagens Docker** para ambos os serviços
 
-The pipeline runs on:
-- Push to `main` or `master` branches
-- Pull requests to `main` or `master` branches
+O pipeline é executado em:
+- Push para as branches `main` ou `master`
+- Pull requests para as branches `main` ou `master`
 
-Each service has its own job that runs in parallel:
+Cada serviço tem seu próprio job que roda em paralelo:
 - `build-test-currency-report`
 - `build-test-currency-history`
 
-## Project Structure
+## Estrutura do Projeto
 
 ```
 eng-sof/
 ├── currency-report/
 │   ├── src/
-│   │   └── app.py              # FastAPI application
+│   │   └── app.py              # Aplicação FastAPI
 │   ├── tests/
-│   │   └── test_app.py         # Unit tests
-│   ├── Dockerfile              # Container configuration
-│   └── pyproject.toml          # Python dependencies
+│   │   └── test_app.py         # Testes unitários
+│   ├── Dockerfile              # Configuração do container
+│   └── pyproject.toml          # Dependências Python
 ├── currency-history/
 │   ├── src/
-│   │   └── app.py              # FastAPI application
+│   │   └── app.py              # Aplicação FastAPI
 │   ├── tests/
-│   │   └── test_app.py         # Unit tests (with mocked inter-service calls)
-│   ├── Dockerfile              # Container configuration
-│   └── pyproject.toml          # Python dependencies
+│   │   └── test_app.py         # Testes unitários (com chamadas entre serviços mockadas)
+│   ├── Dockerfile              # Configuração do container
+│   └── pyproject.toml          # Dependências Python
 ├── .github/
 │   └── workflows/
-│       └── ci.yml              # CI/CD pipeline
-├── compose.yaml                # Docker Compose configuration
-└── README.md                   # This file
+│       └── ci.yml              # Pipeline CI/CD
+├── compose.yaml                # Configuração do Docker Compose
+└── README.md                   # Este arquivo
 ```
 
-## Technology Stack
+## Solução de Problemas
 
-- **Language**: Python 3.12+
-- **Web Framework**: FastAPI
-- **ASGI Server**: Uvicorn
-- **HTTP Client**: httpx (async)
-- **Testing**: pytest
-- **Package Manager**: uv
-- **Containerization**: Docker
-- **Orchestration**: Docker Compose
-- **CI/CD**: GitHub Actions
-
-## Design Decisions
-
-### Why FastAPI?
-- Modern, fast Python web framework
-- Built-in async support for inter-service communication
-- Automatic OpenAPI documentation
-- Type hints and validation with Pydantic
-
-### Why uv?
-- Fast, modern Python package manager
-- Excellent for reproducible builds
-- Simple dependency management
-
-### Why Docker Compose?
-- Easy orchestration of multiple services
-- Built-in networking for service discovery
-- Health checks and dependency management
-- Perfect for development and testing
-
-### Mocked Data
-The services use mocked exchange rate data to keep the implementation simple and avoid external API dependencies. In production, these would connect to real exchange rate APIs.
-
-## Troubleshooting
-
-### Services won't start
+### Serviços não iniciam
 ```bash
-# Check if ports are already in use
+# Verificar se as portas já estão em uso
 lsof -i :8100
 lsof -i :8101
 
-# Check Docker logs
+# Verificar logs do Docker
 docker compose logs currency-report
 docker compose logs currency-history
 ```
 
-### currency-history can't reach currency-report
-- Ensure both services are on the same Docker network
-- Check that `CURRENCY_REPORT_URL` uses the service name (`currency-report`)
-- Verify currency-report's health check is passing
+### currency-history não consegue alcançar currency-report
+- Garantir que ambos os serviços estão na mesma rede Docker
+- Verificar que `CURRENCY_REPORT_URL` usa o nome do serviço (`currency-report`)
+- Verificar se o health check do currency-report está passando
 
-### Tests failing
+### Testes falhando
 ```bash
-# Ensure you've installed dev dependencies
+# Garantir que você instalou as dependências de dev
 uv sync --extra dev
 
-# Run tests with verbose output
+# Executar testes com saída verbosa
 uv run pytest tests/ -v -s
 ```
-
-## Future Enhancements
-
-- [ ] Add database for persistent historical data
-- [ ] Integrate with real exchange rate APIs
-- [ ] Add authentication and rate limiting
-- [ ] Implement caching layer (Redis)
-- [ ] Add monitoring and observability (Prometheus, Grafana)
-- [ ] Deploy to Kubernetes
-- [ ] Add more comprehensive error handling and logging
-
-## License
-
-This is an educational project for a DevOps assignment.
-
-## Authors
-
-Created as part of the Software Engineering undergraduate program.
-
