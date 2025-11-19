@@ -1,0 +1,30 @@
+services:
+  currency-report:
+    build: ./currency-report
+    ports:
+      - "8100:8100"
+    networks:
+      - microservices-net
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8100/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  currency-history:
+    build: ./currency-history
+    ports:
+      - "8101:8101"
+    networks:
+      - microservices-net
+    environment:
+      - CURRENCY_REPORT_URL=http://currency-report:8100
+    depends_on:
+      currency-report:
+        condition: service_healthy
+
+networks:
+  microservices-net:
+    driver: bridge
+
